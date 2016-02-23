@@ -20,8 +20,6 @@ class SlashOptions : public soil::Options
 
   virtual po::options_description* configOptions();
 
-  int udp_port;
-  
   std::string instrus_filter;
 
   std::string speed_file;

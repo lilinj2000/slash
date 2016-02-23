@@ -14,7 +14,8 @@ SlashServer::SlashServer(SlashOptions* slash_options,
   std::string speed_file = slash_options_->speed_file;
   
   if( !speed_file.empty() )
-    speed_file_.reset( new air::MDataFile(speed_file) );
+    speed_file_.reset( new air::MDataFile(speed_file,
+                                          slash_options_->instrus_filter) );
   
   md_service_.reset( smack::MDService::createService(options, this) );
 }
@@ -36,6 +37,11 @@ void SlashServer::onReceiveNormal(const smack::quote_head* head, smack::quote_no
 void SlashServer::onReceiveSummary(const smack::quote_head* head, smack::quote_summary* data)
 {
   SLASH_TRACE <<"SlashServer::onReceiveNormal()";
+
+  speed_file_->putData( toSpeedMData(head->m_symbol,
+                                     head->m_update_time,
+                                     head->m_millisecond) );
+
 }
 
 air::SpeedMData* SlashServer::toSpeedMData(const std::string& instru,
