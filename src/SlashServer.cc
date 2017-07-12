@@ -25,24 +25,15 @@ SlashServer::~SlashServer()
   SLASH_TRACE <<"SlashServer::~SlashServer()";
 }
 
-void SlashServer::onReceiveNormal(const smack::quote_head* head, smack::quote_normal* data)
+void SlashServer::onReceiveNormal(const smack::guava_udp_normal* data)
 {
   SLASH_TRACE <<"SlashServer::onReceiveNormal()";
 
-  speed_file_->putData( toSpeedMData(head->m_symbol,
-                                     head->m_update_time,
-                                     head->m_millisecond) );
+  speed_file_->putData( toSpeedMData(data->m_symbol,
+                                     data->m_update_time,
+                                     data->m_millisecond) );
 }
 
-void SlashServer::onReceiveSummary(const smack::quote_head* head, smack::quote_summary* data)
-{
-  SLASH_TRACE <<"SlashServer::onReceiveNormal()";
-
-  speed_file_->putData( toSpeedMData(head->m_symbol,
-                                     head->m_update_time,
-                                     head->m_millisecond) );
-
-}
 
 air::SpeedMData* SlashServer::toSpeedMData(const std::string& instru,
                                            const std::string& update_time,
@@ -55,7 +46,6 @@ air::SpeedMData* SlashServer::toSpeedMData(const std::string& instru,
   speed_data->update_millisec = update_millisec;
 
   return speed_data.release();
-
 }
 
 };

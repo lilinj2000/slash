@@ -19,9 +19,7 @@ class SlashServer : public smack::MDServiceCallback
   
  protected:
   
-  virtual void onReceiveNormal(const smack::quote_head*, smack::quote_normal* data);
-
-  virtual void onReceiveSummary(const smack::quote_head*, smack::quote_summary* data);
+  virtual void onReceiveNormal(const smack::guava_udp_normal* data);
 
   air::SpeedMData* toSpeedMData(const std::string& instru,
                                 const std::string& update_time,
