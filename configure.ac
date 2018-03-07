@@ -34,8 +34,18 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
-home_3rd=~/3rd
-home_libs=~/libs
+node=`uname -n`
+
+AC_ARG_VAR(home_3rd, home path of 3rd)
+if test "x$home_3rd" = "x"; then
+   home_3rd=~/3rd/${node}
+fi
+
+AC_ARG_VAR(home_libs, home path of libs)
+if test "x$home_libs" = "x"; then
+   home_libs=~/libs/${node}
+fi
+
 
 dnl boost lib
 AC_ARG_WITH([boost],
@@ -46,18 +56,63 @@ AC_ARG_WITH([boost],
 AC_SUBST([BOOST_HOME])
 
 BOOST_CPPFLAGS="-I$BOOST_HOME/include -DBOOST_ALL_DYN_LINK"
-BOOST_LIBADD="$BOOST_HOME/lib/libboost_log_setup.so \
-              $BOOST_HOME/lib/libboost_log.so \
+BOOST_LIBADD=" \
 	      $BOOST_HOME/lib/libboost_filesystem.so \
-  	      $BOOST_HOME/lib/libboost_program_options.so \
 	      $BOOST_HOME/lib/libboost_regex.so \
 	      $BOOST_HOME/lib/libboost_thread.so \
-	      $BOOST_HOME/lib/libboost_chrono.so \
-	      $BOOST_HOME/lib/libboost_date_time.so \
-	      $BOOST_HOME/lib/libboost_atomic.so \
 	      $BOOST_HOME/lib/libboost_system.so"
 AC_SUBST(BOOST_CPPFLAGS)
 AC_SUBST(BOOST_LIBADD)
+
+dnl rapidjson lib
+RAPIDJSON_HOME=$home_3rd/rapidjson
+AC_ARG_WITH([rapidjson], 
+    [AS_HELP_STRING([--with-rapidjson],
+        [home path of the rapidjson, defaults to $RAPIDJSON_HOME])],
+    [RAPIDJSON_HOME="$withval"],
+    [RAPIDJSON_HOME="$RAPIDJSON_HOME"])
+AC_SUBST([RAPIDJSON_HOME])
+
+RAPIDJSON_CPPFLAGS="-I$RAPIDJSON_HOME/include -DRAPIDJSON_HAS_STDSTRING"
+AC_SUBST(RAPIDJSON_CPPFLAGS)
+
+dnl fmt lib
+FMT_HOME=$home_3rd/fmt
+AC_ARG_WITH([fmt], 
+    [AS_HELP_STRING([--with-fmt],
+        [home path of the fmt, defaults to $FMT_HOME])],
+    [FMT_HOME="$withval"],
+    [FMT_HOME="$FMT_HOME"])
+AC_SUBST([FMT_HOME])
+
+FMT_CPPFLAGS="-I$FMT_HOME/include"
+FMT_LIBADD="-L$FMT_HOME/lib -lfmt"
+AC_SUBST(FMT_CPPFLAGS)
+AC_SUBST(FMT_LIBADD)
+
+dnl spdlog lib
+SPDLOG_HOME=$home_3rd/spdlog
+AC_ARG_WITH([spdlog], 
+    [AS_HELP_STRING([--with-spdlog],
+        [home path of the spdlog, defaults to $SPDLOG_HOME])],
+    [SPDLOG_HOME="$withval"],
+    [SPDLOG_HOME="$SPDLOG_HOME"])
+AC_SUBST([SPDLOG_HOME])
+
+SPDLOG_CPPFLAGS="-I$SPDLOG_HOME/include -DSPDLOG_FMT_EXTERNAL"
+AC_SUBST(SPDLOG_CPPFLAGS)
+
+dnl readerwriterqueue lib
+READERWRITERQUEUE_HOME=$home_3rd/readerwriterqueue
+AC_ARG_WITH([readerwriterqueue], 
+    [AS_HELP_STRING([--with-readerwriterqueue],
+        [home path of the readerwriterqueue, defaults to $READERWRITERQUEUE_HOME])],
+    [READERWRITERQUEUE_HOME="$withval"],
+    [READERWRITERQUEUE_HOME="$READERWRITERQUEUE_HOME"])
+AC_SUBST([READERWRITERQUEUE_HOME])
+
+READERWRITERQUEUE_CPPFLAGS="-I$READERWRITERQUEUE_HOME/include"
+AC_SUBST(READERWRITERQUEUE_CPPFLAGS)
 
 dnl soil lib
 AC_ARG_WITH([soil],
@@ -85,23 +140,8 @@ SMACK_LIBADD="$SMACK_HOME/lib/libsmack.la"
 AC_SUBST(SMACK_CPPFLAGS)
 AC_SUBST(SMACK_LIBADD)
 
-dnl air lib
-AC_ARG_WITH([air],
-    [AS_HELP_STRING([--with-air],
-        [home path of the air, defaults to $home_libs/air])],
-    [AIR_HOME="$withval"],
-    [AIR_HOME="$home_libs/air"])
-AC_SUBST([AIR_HOME])
-
-AIR_CPPFLAGS="-I$AIR_HOME/include"
-AIR_LIBADD="$AIR_HOME/lib/libair.la"
-AC_SUBST(AIR_CPPFLAGS)
-AC_SUBST(AIR_LIBADD)
-
-
-
 AC_OUTPUT([
 	Makefile
-	src/Makefile])
+	service/Makefile])
 
 

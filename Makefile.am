@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = src
+SUBDIRS = service
 
-EXTRA_DIST = deploy.sh
+EXTRA_DIST = 
 
 ACLOCAL_AMFLAGS = -I m4

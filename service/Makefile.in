@@ -37,7 +37,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = slash$(EXEEXT)
-subdir = src
+subdir = service
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -52,8 +52,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(slashdir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_slash_OBJECTS = slash-SlashConfig.$(OBJEXT) \
-	slash-SlashServer.$(OBJEXT) slash-Main.$(OBJEXT)
+am_slash_OBJECTS = slash-md_data.$(OBJEXT) slash-options.$(OBJEXT) \
+	slash-server.$(OBJEXT) slash-main.$(OBJEXT)
 slash_OBJECTS = $(am_slash_OBJECTS)
 am__DEPENDENCIES_1 =
 slash_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -103,9 +103,6 @@ ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
-AIR_CPPFLAGS = @AIR_CPPFLAGS@
-AIR_HOME = @AIR_HOME@
-AIR_LIBADD = @AIR_LIBADD@
 AMTAR = @AMTAR@
 AR = @AR@
 AUTOCONF = @AUTOCONF@
@@ -135,6 +132,9 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
+FMT_CPPFLAGS = @FMT_CPPFLAGS@
+FMT_HOME = @FMT_HOME@
+FMT_LIBADD = @FMT_LIBADD@
 GREP = @GREP@
 HAVE_CXX11 = @HAVE_CXX11@
 INSTALL = @INSTALL@
@@ -170,6 +170,10 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+RAPIDJSON_CPPFLAGS = @RAPIDJSON_CPPFLAGS@
+RAPIDJSON_HOME = @RAPIDJSON_HOME@
+READERWRITERQUEUE_CPPFLAGS = @READERWRITERQUEUE_CPPFLAGS@
+READERWRITERQUEUE_HOME = @READERWRITERQUEUE_HOME@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -179,6 +183,8 @@ SMACK_LIBADD = @SMACK_LIBADD@
 SOIL_CPPFLAGS = @SOIL_CPPFLAGS@
 SOIL_HOME = @SOIL_HOME@
 SOIL_LIBADD = @SOIL_LIBADD@
+SPDLOG_CPPFLAGS = @SPDLOG_CPPFLAGS@
+SPDLOG_HOME = @SPDLOG_HOME@
 STRIP = @STRIP@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
@@ -205,6 +211,8 @@ datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+home_3rd = @home_3rd@
+home_libs = @home_libs@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
@@ -236,30 +244,36 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 slash_SOURCES = \
-	SlashConfig.cc \
-	SlashServer.cc \
-	Main.cc
+	md_data.cc \
+	options.cc \
+	server.cc \
+	main.cc
 
 slash_CPPFLAGS = \
-		$(BOOST_CPPFLAGS) \
-		$(SOIL_CPPFLAGS) \
-		$(SMACK_CPPFLAGS) \
-		$(AIR_CPPFLAGS)
+	-I$(top_srcdir) \
+	$(BOOST_CPPFLAGS) \
+	$(RAPIDJSON_CPPFLAGS) \
+	$(FMT_CPPFLAGS) \
+	$(SPDLOG_CPPFLAGS) \
+	$(READERWRITERQUEUE_CPPFLAGS) \
+	$(SOIL_CPPFLAGS) \
+	$(SMACK_CPPFLAGS)
 
 slash_LDADD = \
 	$(BOOST_LIBADD) \
+	$(FMT_LIBADD) \
 	$(SOIL_LIBADD) \
-	$(SMACK_LIBADD) \
-	$(AIR_LIBADD)
+	$(SMACK_LIBADD)
 
 slash_LDFLAGS = $(LIBADD_DL) -Wl,--no-as-needed -pthread
 
 # header files
-noinst_HEADERS = SlashConfig.hh \
-	SlashServer.hh \
-	SlashLog.hh
+noinst_HEADERS = \
+	md_data.h \
+	options.h \
+	server.h
 
-EXTRA_DIST = env.sh slash.cfg log.cfg
+EXTRA_DIST = env.sh slash.json
 slashdir = $(bindir)
 slash_DATA = $(EXTRA_DIST)
 all: all-am
@@ -275,9 +289,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign service/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/Makefile
+	  $(AUTOMAKE) --foreign service/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -349,9 +363,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-Main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-SlashConfig.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-SlashServer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-md_data.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-server.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -374,47 +389,61 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
-slash-SlashConfig.o: SlashConfig.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-SlashConfig.o -MD -MP -MF $(DEPDIR)/slash-SlashConfig.Tpo -c -o slash-SlashConfig.o `test -f 'SlashConfig.cc' || echo '$(srcdir)/'`SlashConfig.cc
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-SlashConfig.Tpo $(DEPDIR)/slash-SlashConfig.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SlashConfig.cc' object='slash-SlashConfig.o' libtool=no @AMDEPBACKSLASH@
+slash-md_data.o: md_data.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-md_data.o -MD -MP -MF $(DEPDIR)/slash-md_data.Tpo -c -o slash-md_data.o `test -f 'md_data.cc' || echo '$(srcdir)/'`md_data.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-md_data.Tpo $(DEPDIR)/slash-md_data.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='md_data.cc' object='slash-md_data.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-SlashConfig.o `test -f 'SlashConfig.cc' || echo '$(srcdir)/'`SlashConfig.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-md_data.o `test -f 'md_data.cc' || echo '$(srcdir)/'`md_data.cc
 
-slash-SlashConfig.obj: SlashConfig.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-SlashConfig.obj -MD -MP -MF $(DEPDIR)/slash-SlashConfig.Tpo -c -o slash-SlashConfig.obj `if test -f 'SlashConfig.cc'; then $(CYGPATH_W) 'SlashConfig.cc'; else $(CYGPATH_W) '$(srcdir)/SlashConfig.cc'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-SlashConfig.Tpo $(DEPDIR)/slash-SlashConfig.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SlashConfig.cc' object='slash-SlashConfig.obj' libtool=no @AMDEPBACKSLASH@
+slash-md_data.obj: md_data.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-md_data.obj -MD -MP -MF $(DEPDIR)/slash-md_data.Tpo -c -o slash-md_data.obj `if test -f 'md_data.cc'; then $(CYGPATH_W) 'md_data.cc'; else $(CYGPATH_W) '$(srcdir)/md_data.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-md_data.Tpo $(DEPDIR)/slash-md_data.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='md_data.cc' object='slash-md_data.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-SlashConfig.obj `if test -f 'SlashConfig.cc'; then $(CYGPATH_W) 'SlashConfig.cc'; else $(CYGPATH_W) '$(srcdir)/SlashConfig.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-md_data.obj `if test -f 'md_data.cc'; then $(CYGPATH_W) 'md_data.cc'; else $(CYGPATH_W) '$(srcdir)/md_data.cc'; fi`
 
-slash-SlashServer.o: SlashServer.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-SlashServer.o -MD -MP -MF $(DEPDIR)/slash-SlashServer.Tpo -c -o slash-SlashServer.o `test -f 'SlashServer.cc' || echo '$(srcdir)/'`SlashServer.cc
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-SlashServer.Tpo $(DEPDIR)/slash-SlashServer.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SlashServer.cc' object='slash-SlashServer.o' libtool=no @AMDEPBACKSLASH@
+slash-options.o: options.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-options.o -MD -MP -MF $(DEPDIR)/slash-options.Tpo -c -o slash-options.o `test -f 'options.cc' || echo '$(srcdir)/'`options.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-options.Tpo $(DEPDIR)/slash-options.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='options.cc' object='slash-options.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-SlashServer.o `test -f 'SlashServer.cc' || echo '$(srcdir)/'`SlashServer.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-options.o `test -f 'options.cc' || echo '$(srcdir)/'`options.cc
 
-slash-SlashServer.obj: SlashServer.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-SlashServer.obj -MD -MP -MF $(DEPDIR)/slash-SlashServer.Tpo -c -o slash-SlashServer.obj `if test -f 'SlashServer.cc'; then $(CYGPATH_W) 'SlashServer.cc'; else $(CYGPATH_W) '$(srcdir)/SlashServer.cc'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-SlashServer.Tpo $(DEPDIR)/slash-SlashServer.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SlashServer.cc' object='slash-SlashServer.obj' libtool=no @AMDEPBACKSLASH@
+slash-options.obj: options.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-options.obj -MD -MP -MF $(DEPDIR)/slash-options.Tpo -c -o slash-options.obj `if test -f 'options.cc'; then $(CYGPATH_W) 'options.cc'; else $(CYGPATH_W) '$(srcdir)/options.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-options.Tpo $(DEPDIR)/slash-options.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='options.cc' object='slash-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-SlashServer.obj `if test -f 'SlashServer.cc'; then $(CYGPATH_W) 'SlashServer.cc'; else $(CYGPATH_W) '$(srcdir)/SlashServer.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-options.obj `if test -f 'options.cc'; then $(CYGPATH_W) 'options.cc'; else $(CYGPATH_W) '$(srcdir)/options.cc'; fi`
 
-slash-Main.o: Main.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-Main.o -MD -MP -MF $(DEPDIR)/slash-Main.Tpo -c -o slash-Main.o `test -f 'Main.cc' || echo '$(srcdir)/'`Main.cc
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-Main.Tpo $(DEPDIR)/slash-Main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Main.cc' object='slash-Main.o' libtool=no @AMDEPBACKSLASH@
+slash-server.o: server.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-server.o -MD -MP -MF $(DEPDIR)/slash-server.Tpo -c -o slash-server.o `test -f 'server.cc' || echo '$(srcdir)/'`server.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-server.Tpo $(DEPDIR)/slash-server.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='server.cc' object='slash-server.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-Main.o `test -f 'Main.cc' || echo '$(srcdir)/'`Main.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-server.o `test -f 'server.cc' || echo '$(srcdir)/'`server.cc
 
-slash-Main.obj: Main.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-Main.obj -MD -MP -MF $(DEPDIR)/slash-Main.Tpo -c -o slash-Main.obj `if test -f 'Main.cc'; then $(CYGPATH_W) 'Main.cc'; else $(CYGPATH_W) '$(srcdir)/Main.cc'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-Main.Tpo $(DEPDIR)/slash-Main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Main.cc' object='slash-Main.obj' libtool=no @AMDEPBACKSLASH@
+slash-server.obj: server.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-server.obj -MD -MP -MF $(DEPDIR)/slash-server.Tpo -c -o slash-server.obj `if test -f 'server.cc'; then $(CYGPATH_W) 'server.cc'; else $(CYGPATH_W) '$(srcdir)/server.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-server.Tpo $(DEPDIR)/slash-server.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='server.cc' object='slash-server.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-Main.obj `if test -f 'Main.cc'; then $(CYGPATH_W) 'Main.cc'; else $(CYGPATH_W) '$(srcdir)/Main.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-server.obj `if test -f 'server.cc'; then $(CYGPATH_W) 'server.cc'; else $(CYGPATH_W) '$(srcdir)/server.cc'; fi`
+
+slash-main.o: main.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-main.o -MD -MP -MF $(DEPDIR)/slash-main.Tpo -c -o slash-main.o `test -f 'main.cc' || echo '$(srcdir)/'`main.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-main.Tpo $(DEPDIR)/slash-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='main.cc' object='slash-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-main.o `test -f 'main.cc' || echo '$(srcdir)/'`main.cc
+
+slash-main.obj: main.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-main.obj -MD -MP -MF $(DEPDIR)/slash-main.Tpo -c -o slash-main.obj `if test -f 'main.cc'; then $(CYGPATH_W) 'main.cc'; else $(CYGPATH_W) '$(srcdir)/main.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-main.Tpo $(DEPDIR)/slash-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='main.cc' object='slash-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-main.obj `if test -f 'main.cc'; then $(CYGPATH_W) 'main.cc'; else $(CYGPATH_W) '$(srcdir)/main.cc'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
