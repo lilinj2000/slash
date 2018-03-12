@@ -62,15 +62,18 @@ MDataFile::~MDataFile() {
   SOIL_TRACE("MDataFile::~MDataFile()");
 }
 
-bool MDataFile::filterData(const soil::Data* data) {
+bool MDataFile::filterData(
+    std::shared_ptr<soil::Data> data) {
   SOIL_TRACE("MData::filterData()");
 
   const MData* mdata
-      = dynamic_cast<const MData*>(data);
+      = dynamic_cast<const MData*>(data.get());
 
   if (instrus_filter_.empty()
       || instrus_filter_.count(
           mdata->instruID()) > 0) {
+    SOIL_DEBUG_PRINT(mdata->instruID());
+
     return true;
   }
 

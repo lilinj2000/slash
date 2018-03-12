@@ -37,6 +37,8 @@ Server::Server(
   options_.reset(new Options(doc));
   std::string speed_file = options_->speed_file;
 
+  SOIL_DEBUG_PRINT(options_->instrus_filter);
+
   if (!speed_file.empty()) {
     speed_file_.reset(new MDataFile(
         speed_file,
@@ -68,6 +70,10 @@ std::shared_ptr<MData> Server::toSpeedMData(
     const std::string& update_time,
     int update_millisec) {
   SOIL_TRACE("Server::toSpeedMData()");
+
+  SOIL_DEBUG_PRINT(instru);
+  SOIL_DEBUG_PRINT(update_time);
+  SOIL_DEBUG_PRINT(update_millisec);
 
   std::shared_ptr<SpeedMData> speed_data(
       new SpeedMData());
