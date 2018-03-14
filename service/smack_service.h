@@ -49,4 +49,4 @@ class SmackService : public SService, public smack::MDServiceCallback {
 
 }  // namespace slash
 
-#endif  // SERVICE_SERVER_H_
+#endif  // SERVICE_SMACK_SERVICE_H_

@@ -37,7 +37,7 @@ class SCallback {
   virtual void onMData(const std::string& instru,
                        const std::string& update_time, int update_millisec) = 0;
 
-  virtual ~SCallback() {};
+  virtual ~SCallback() {}
 };
 
 class SService {

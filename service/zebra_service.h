@@ -51,4 +51,4 @@ class ZebraService : public SService, public zebra::ServiceCallback {
 
 }  // namespace slash
 
-#endif  // SERVICE_SERVER_H_
+#endif  // SERVICE_ZEBRA_SERVICE_H_

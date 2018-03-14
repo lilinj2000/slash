@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
   if (config) {
     config_file = args::get(config);
   }
-  
+
   rapidjson::Document doc;
   soil::json::load_from_file(&doc, config_file);
   soil::log::init(doc);
