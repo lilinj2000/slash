@@ -25,23 +25,42 @@
 //
 
 #include <memory>
+#include <iostream>
 #include "service/server.h"
 #include "soil/pause.h"
 #include "soil/log.h"
+#include "args.hxx"
 
-int main(
-    int argc,
-    char* argv[]) {
-  rapidjson::Document config;
+int main(int argc, char* argv[]) {
+  args::ArgumentParser parser("The ticket test program.");
+  args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
+  args::ValueFlag<std::string> config(parser, "config", "config file",
+                                      {'c', "config"});
 
-  soil::json::load_from_file(&config, "slash.json");
-  soil::log::init(config);
+  try {
+    parser.ParseCLI(argc, argv);
+  } catch (args::Help) {
+    std::cout << parser;
+    return 0;
+  } catch (args::ParseError e) {
+    std::cerr << e.what() << std::endl;
+    std::cerr << parser;
+    return 1;
+  }
+
+  std::string config_file = "slash.json";
+  if (config) {
+    config_file = args::get(config);
+  }
+  
+  rapidjson::Document doc;
+  soil::json::load_from_file(&doc, config_file);
+  soil::log::init(doc);
 
   std::unique_ptr<slash::Server> server;
-  server.reset(new slash::Server(config));
+  server.reset(new slash::Server(doc));
 
-  std::unique_ptr<soil::Pause>
-      pause(soil::Pause::create());
+  std::unique_ptr<soil::Pause> pause(soil::Pause::create());
 
   return 0;
 }

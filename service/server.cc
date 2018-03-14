@@ -30,8 +30,7 @@
 
 namespace slash {
 
-Server::Server(
-    const rapidjson::Document& doc) {
+Server::Server(const rapidjson::Document& doc) {
   SOIL_TRACE("Server::Server()");
 
   options_.reset(new Options(doc));
@@ -40,43 +39,32 @@ Server::Server(
   SOIL_DEBUG_PRINT(options_->instrus_filter);
 
   if (!speed_file.empty()) {
-    speed_file_.reset(new MDataFile(
-        speed_file,
-        options_->instrus_filter));
+    speed_file_.reset(new MDataFile(speed_file, options_->instrus_filter));
   }
 
-  md_service_.reset(
-      smack::MDService::create(doc, this));
+  s_service_.reset(SService::create(doc, this));
 }
 
-Server::~Server() {
-  SOIL_TRACE("Server::~Server()");
-}
+Server::~Server() { SOIL_TRACE("Server::~Server()"); }
 
-void Server::onReceiveNormal(
-    const smack::guava_udp_normal* data) {
-  SOIL_TRACE("Server::onReceiveNormal()");
-
+void Server::onMData(const std::string& instru, const std::string& update_time,
+                     int update_millisec) {
+  SOIL_TRACE("Server::onMData()");
   if (speed_file_.get()) {
-    speed_file_->putData(
-        toSpeedMData(data->m_symbol,
-                     data->m_update_time,
-                     data->m_millisecond));
+    speed_file_->putData(toSpeedMData(instru, update_time, update_millisec));
   }
 }
 
-std::shared_ptr<MData> Server::toSpeedMData(
-    const std::string& instru,
-    const std::string& update_time,
-    int update_millisec) {
+std::shared_ptr<MData> Server::toSpeedMData(const std::string& instru,
+                                            const std::string& update_time,
+                                            int update_millisec) {
   SOIL_TRACE("Server::toSpeedMData()");
 
   SOIL_DEBUG_PRINT(instru);
   SOIL_DEBUG_PRINT(update_time);
   SOIL_DEBUG_PRINT(update_millisec);
 
-  std::shared_ptr<SpeedMData> speed_data(
-      new SpeedMData());
+  std::shared_ptr<SpeedMData> speed_data(new SpeedMData());
 
   speed_data->instru = instru;
   speed_data->update_time = update_time;

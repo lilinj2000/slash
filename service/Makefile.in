@@ -53,11 +53,14 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(slashdir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_slash_OBJECTS = slash-md_data.$(OBJEXT) slash-options.$(OBJEXT) \
-	slash-server.$(OBJEXT) slash-main.$(OBJEXT)
+	slash-smack_service.$(OBJEXT) slash-zebra_service.$(OBJEXT) \
+	slash-s_service.$(OBJEXT) slash-server.$(OBJEXT) \
+	slash-main.$(OBJEXT)
 slash_OBJECTS = $(am_slash_OBJECTS)
 am__DEPENDENCIES_1 =
 slash_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 slash_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(slash_LDFLAGS) $(LDFLAGS) -o $@
@@ -105,6 +108,8 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AR = @AR@
+ARGS_CPPFLAGS = @ARGS_CPPFLAGS@
+ARGS_HOME = @ARGS_HOME@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -187,6 +192,9 @@ SPDLOG_CPPFLAGS = @SPDLOG_CPPFLAGS@
 SPDLOG_HOME = @SPDLOG_HOME@
 STRIP = @STRIP@
 VERSION = @VERSION@
+ZEBRA_CPPFLAGS = @ZEBRA_CPPFLAGS@
+ZEBRA_HOME = @ZEBRA_HOME@
+ZEBRA_LIBADD = @ZEBRA_LIBADD@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -246,6 +254,9 @@ AUTOMAKE_OPTIONS = foreign
 slash_SOURCES = \
 	md_data.cc \
 	options.cc \
+	smack_service.cc \
+	zebra_service.cc \
+	s_service.cc \
 	server.cc \
 	main.cc
 
@@ -257,23 +268,29 @@ slash_CPPFLAGS = \
 	$(SPDLOG_CPPFLAGS) \
 	$(READERWRITERQUEUE_CPPFLAGS) \
 	$(SOIL_CPPFLAGS) \
-	$(SMACK_CPPFLAGS)
+	$(SMACK_CPPFLAGS) \
+	$(ZEBRA_CPPFLAGS) \
+	$(ARGS_CPPFLAGS)
 
 slash_LDADD = \
 	$(BOOST_LIBADD) \
 	$(FMT_LIBADD) \
 	$(SOIL_LIBADD) \
-	$(SMACK_LIBADD)
+	$(SMACK_LIBADD) \
+	$(ZEBRA_LIBADD)
 
 slash_LDFLAGS = $(LIBADD_DL) -Wl,--no-as-needed -pthread
 
 # header files
 noinst_HEADERS = \
 	md_data.h \
+	smack_service.h \
+	zebra_service.h \
+	s_service.h \
 	options.h \
 	server.h
 
-EXTRA_DIST = env.sh slash.json
+EXTRA_DIST = env.sh smack.json zebra.json
 slashdir = $(bindir)
 slash_DATA = $(EXTRA_DIST)
 all: all-am
@@ -366,7 +383,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-md_data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-s_service.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-server.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-smack_service.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slash-zebra_service.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -416,6 +436,48 @@ slash-options.obj: options.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='options.cc' object='slash-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-options.obj `if test -f 'options.cc'; then $(CYGPATH_W) 'options.cc'; else $(CYGPATH_W) '$(srcdir)/options.cc'; fi`
+
+slash-smack_service.o: smack_service.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-smack_service.o -MD -MP -MF $(DEPDIR)/slash-smack_service.Tpo -c -o slash-smack_service.o `test -f 'smack_service.cc' || echo '$(srcdir)/'`smack_service.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-smack_service.Tpo $(DEPDIR)/slash-smack_service.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='smack_service.cc' object='slash-smack_service.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-smack_service.o `test -f 'smack_service.cc' || echo '$(srcdir)/'`smack_service.cc
+
+slash-smack_service.obj: smack_service.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-smack_service.obj -MD -MP -MF $(DEPDIR)/slash-smack_service.Tpo -c -o slash-smack_service.obj `if test -f 'smack_service.cc'; then $(CYGPATH_W) 'smack_service.cc'; else $(CYGPATH_W) '$(srcdir)/smack_service.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-smack_service.Tpo $(DEPDIR)/slash-smack_service.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='smack_service.cc' object='slash-smack_service.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-smack_service.obj `if test -f 'smack_service.cc'; then $(CYGPATH_W) 'smack_service.cc'; else $(CYGPATH_W) '$(srcdir)/smack_service.cc'; fi`
+
+slash-zebra_service.o: zebra_service.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-zebra_service.o -MD -MP -MF $(DEPDIR)/slash-zebra_service.Tpo -c -o slash-zebra_service.o `test -f 'zebra_service.cc' || echo '$(srcdir)/'`zebra_service.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-zebra_service.Tpo $(DEPDIR)/slash-zebra_service.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='zebra_service.cc' object='slash-zebra_service.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-zebra_service.o `test -f 'zebra_service.cc' || echo '$(srcdir)/'`zebra_service.cc
+
+slash-zebra_service.obj: zebra_service.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-zebra_service.obj -MD -MP -MF $(DEPDIR)/slash-zebra_service.Tpo -c -o slash-zebra_service.obj `if test -f 'zebra_service.cc'; then $(CYGPATH_W) 'zebra_service.cc'; else $(CYGPATH_W) '$(srcdir)/zebra_service.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-zebra_service.Tpo $(DEPDIR)/slash-zebra_service.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='zebra_service.cc' object='slash-zebra_service.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-zebra_service.obj `if test -f 'zebra_service.cc'; then $(CYGPATH_W) 'zebra_service.cc'; else $(CYGPATH_W) '$(srcdir)/zebra_service.cc'; fi`
+
+slash-s_service.o: s_service.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-s_service.o -MD -MP -MF $(DEPDIR)/slash-s_service.Tpo -c -o slash-s_service.o `test -f 's_service.cc' || echo '$(srcdir)/'`s_service.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-s_service.Tpo $(DEPDIR)/slash-s_service.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='s_service.cc' object='slash-s_service.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-s_service.o `test -f 's_service.cc' || echo '$(srcdir)/'`s_service.cc
+
+slash-s_service.obj: s_service.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-s_service.obj -MD -MP -MF $(DEPDIR)/slash-s_service.Tpo -c -o slash-s_service.obj `if test -f 's_service.cc'; then $(CYGPATH_W) 's_service.cc'; else $(CYGPATH_W) '$(srcdir)/s_service.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/slash-s_service.Tpo $(DEPDIR)/slash-s_service.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='s_service.cc' object='slash-s_service.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o slash-s_service.obj `if test -f 's_service.cc'; then $(CYGPATH_W) 's_service.cc'; else $(CYGPATH_W) '$(srcdir)/s_service.cc'; fi`
 
 slash-server.o: server.cc
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(slash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT slash-server.o -MD -MP -MF $(DEPDIR)/slash-server.Tpo -c -o slash-server.o `test -f 'server.cc' || echo '$(srcdir)/'`server.cc

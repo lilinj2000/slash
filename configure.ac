@@ -114,6 +114,17 @@ AC_SUBST([READERWRITERQUEUE_HOME])
 READERWRITERQUEUE_CPPFLAGS="-I$READERWRITERQUEUE_HOME/include"
 AC_SUBST(READERWRITERQUEUE_CPPFLAGS)
 
+dnl args lib
+ARGS_HOME=$home_3rd/args
+AC_ARG_WITH([args], 
+    [AS_HELP_STRING([--with-args],
+        [home path of the args, defaults to $ARGS_HOME])],
+    [ARGS_HOME="$withval"],
+    [ARGS_HOME="$ARGS_HOME"])
+AC_SUBST([ARGS_HOME])
+ARGS_CPPFLAGS="-I$ARGS_HOME/include"
+AC_SUBST(ARGS_CPPFLAGS)
+
 dnl soil lib
 AC_ARG_WITH([soil],
     [AS_HELP_STRING([--with-soil],
@@ -139,6 +150,19 @@ SMACK_CPPFLAGS="-I$SMACK_HOME/include"
 SMACK_LIBADD="$SMACK_HOME/lib/libsmack.la"
 AC_SUBST(SMACK_CPPFLAGS)
 AC_SUBST(SMACK_LIBADD)
+
+dnl zebra lib
+AC_ARG_WITH([zebra],
+    [AS_HELP_STRING([--with-zebra],
+        [home path of the zebra, defaults to $home_libs/zebra])],
+    [ZEBRA_HOME="$withval"],
+    [ZEBRA_HOME="$home_libs/zebra"])
+AC_SUBST([ZEBRA_HOME])
+
+ZEBRA_CPPFLAGS="-I$ZEBRA_HOME/include"
+ZEBRA_LIBADD="$ZEBRA_HOME/lib/libzebra.la"
+AC_SUBST(ZEBRA_CPPFLAGS)
+AC_SUBST(ZEBRA_LIBADD)
 
 AC_OUTPUT([
 	Makefile

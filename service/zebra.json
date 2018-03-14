@@ -1,0 +1,38 @@
+{
+    "log": {
+        "level": "trace", 
+        "sinks": [
+            {
+                "sink": {
+                    "level": "trace", 
+                    "type": "stdout_sink_mt"
+                }
+            }, 
+            {
+                "sink": {
+                    "file_name": "zebra.log", 
+                    "max_file_size": 5000000, 
+                    "max_files": 10, 
+                    "type": "rotating_file_sink_mt"
+                }
+            }
+        ]
+    }, 
+    "slash": {
+        "instrus_filter": "cu1603", 
+        "speed_file": "slash_speed.data"
+    }, 
+    "spy": {
+        "device": "eth0", 
+        "filter": "", 
+        "nonblock": 0, 
+        "promisc": 0, 
+        "snaplen": 65535, 
+        "timeout": 0
+    }, 
+    "zebra": {
+        "optimization": false, 
+        "packet_type": 4, 
+        "queue_size": 4096
+    }
+}

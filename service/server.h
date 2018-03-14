@@ -29,33 +29,30 @@
 
 #include <string>
 
-#include "smack/md_service.h"
 #include "service/options.h"
 #include "service/md_data.h"
+#include "service/s_service.h"
 
 namespace slash {
 
-class Server :
-      public smack::MDServiceCallback {
+class Server : public SCallback {
  public:
   explicit Server(const rapidjson::Document& doc);
 
   virtual ~Server();
 
- protected:
-  virtual void onReceiveNormal(
-      const smack::guava_udp_normal* data);
+  virtual void onMData(const std::string& instru,
+                       const std::string& update_time, int update_millisec);
 
-  std::shared_ptr<MData> toSpeedMData(
-      const std::string& instru,
-      const std::string& update_time,
-      int update_millisec);
+ protected:
+  std::shared_ptr<MData> toSpeedMData(const std::string& instru,
+                                      const std::string& update_time,
+                                      int update_millisec);
 
  private:
   std::unique_ptr<Options> options_;
-  std::unique_ptr<smack::MDService> md_service_;
-
   std::unique_ptr<MDataFile> speed_file_;
+  std::unique_ptr<SService> s_service_;
 };
 
 }  // namespace slash

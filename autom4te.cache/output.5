@@ -790,12 +790,17 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIB@&t@OBJS
+ZEBRA_LIBADD
+ZEBRA_CPPFLAGS
+ZEBRA_HOME
 SMACK_LIBADD
 SMACK_CPPFLAGS
 SMACK_HOME
 SOIL_LIBADD
 SOIL_CPPFLAGS
 SOIL_HOME
+ARGS_CPPFLAGS
+ARGS_HOME
 READERWRITERQUEUE_CPPFLAGS
 READERWRITERQUEUE_HOME
 SPDLOG_CPPFLAGS
@@ -941,8 +946,10 @@ with_rapidjson
 with_fmt
 with_spdlog
 with_readerwriterqueue
+with_args
 with_soil
 with_smack
+with_zebra
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1611,8 +1618,10 @@ Optional Packages:
   --with-readerwriterqueue 
                           home path of the readerwriterqueue, defaults to
                           $READERWRITERQUEUE_HOME
+  --with-args             home path of the args, defaults to $ARGS_HOME
   --with-soil             home path of the soil, defaults to $home_libs/soil
   --with-smack            home path of the smack, defaults to $home_libs/smack
+  --with-zebra            home path of the zebra, defaults to $home_libs/zebra
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -15736,6 +15745,19 @@ fi
 READERWRITERQUEUE_CPPFLAGS="-I$READERWRITERQUEUE_HOME/include"
 
 
+ARGS_HOME=$home_3rd/args
+
+@%:@ Check whether --with-args was given.
+if test "${with_args+set}" = set; then
+  withval=$with_args; ARGS_HOME="$withval"
+else
+  ARGS_HOME="$ARGS_HOME"
+fi
+
+
+ARGS_CPPFLAGS="-I$ARGS_HOME/include"
+
+
 
 @%:@ Check whether --with-soil was given.
 if test "${with_soil+set}" = set; then
@@ -15763,6 +15785,21 @@ fi
 
 SMACK_CPPFLAGS="-I$SMACK_HOME/include"
 SMACK_LIBADD="$SMACK_HOME/lib/libsmack.la"
+
+
+
+
+@%:@ Check whether --with-zebra was given.
+if test "${with_zebra+set}" = set; then
+  withval=$with_zebra; ZEBRA_HOME="$withval"
+else
+  ZEBRA_HOME="$home_libs/zebra"
+fi
+
+
+
+ZEBRA_CPPFLAGS="-I$ZEBRA_HOME/include"
+ZEBRA_LIBADD="$ZEBRA_HOME/lib/libzebra.la"
 
 
 
