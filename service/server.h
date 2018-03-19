@@ -42,12 +42,14 @@ class Server : public SCallback {
   virtual ~Server();
 
   virtual void onMData(const std::string& instru,
-                       const std::string& update_time, int update_millisec);
+                       const std::string& update_time, int update_millisec,
+                       const struct timeval* t_pcap = nullptr);
 
  protected:
   std::shared_ptr<MData> toSpeedMData(const std::string& instru,
                                       const std::string& update_time,
-                                      int update_millisec);
+                                      int update_millisec,
+                                      const struct timeval* t_pcap);
 
  private:
   std::unique_ptr<Options> options_;

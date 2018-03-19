@@ -35,7 +35,8 @@ namespace slash {
 class SCallback {
  public:
   virtual void onMData(const std::string& instru,
-                       const std::string& update_time, int update_millisec) = 0;
+                       const std::string& update_time, int update_millisec,
+                       const struct timeval* t_pcap = nullptr) = 0;
 
   virtual ~SCallback() {}
 };

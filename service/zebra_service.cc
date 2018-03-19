@@ -46,7 +46,8 @@ void ZebraService::onReceiveMarketData(const ftdc::MarketDataField* md,
   if (callback_) {
     callback_->onMData(md->updatetime_field.InstrumentID,
                        md->updatetime_field.UpdateTime,
-                       md->updatetime_field.UpdateMillisec);
+                       md->updatetime_field.UpdateMillisec,
+                       &ts);
   }
 }
 
