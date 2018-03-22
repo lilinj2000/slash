@@ -34,12 +34,13 @@ spy = {
 
 zebra = {
     "queue_size": 4096,
-    "packet_type": 4,
-    "optimization": False
+    "packet_type": 99,
+    "optimization": False,
+    "pcap_file": "mixed.pcap"
     }
 
 slash = {
-    "instrus_filter": "cu1603",
+    "instrus_filter": "",
     "speed_file": "slash_speed.data"
     }
 

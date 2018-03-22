@@ -19,7 +19,7 @@
         ]
     }, 
     "slash": {
-        "instrus_filter": "cu1603", 
+        "instrus_filter": "", 
         "speed_file": "slash_speed.data"
     }, 
     "spy": {
@@ -32,7 +32,8 @@
     }, 
     "zebra": {
         "optimization": false, 
-        "packet_type": 4, 
+        "packet_type": 99, 
+        "pcap_file": "mixed.pcap", 
         "queue_size": 4096
     }
 }
