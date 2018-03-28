@@ -47,7 +47,7 @@ class MData : public soil::Data {
 
 class SpeedMData : public MData {
  public:
-  SpeedMData() : t_pcap(nullptr) {}
+  SpeedMData() {}
 
   virtual const std::string& instruID() const {
     return instru;
@@ -58,7 +58,6 @@ class SpeedMData : public MData {
   std::string instru;
   std::string update_time;
   int update_millisec;
-  const struct timeval* t_pcap;
   soil::DateTime time_stamp;
 };
 

@@ -48,18 +48,18 @@ Server::Server(const rapidjson::Document& doc) {
 Server::~Server() { SOIL_TRACE("Server::~Server()"); }
 
 void Server::onMData(const std::string& instru, const std::string& update_time,
-                     int update_millisec, const struct timeval* t_pcap) {
+                     int update_millisec, const soil::DateTime& time_stamp) {
   SOIL_TRACE("Server::onMData()");
   if (speed_file_.get()) {
     speed_file_->putData(
-        toSpeedMData(instru, update_time, update_millisec, t_pcap));
+        toSpeedMData(instru, update_time, update_millisec, time_stamp));
   }
 }
 
 std::shared_ptr<MData> Server::toSpeedMData(const std::string& instru,
                                             const std::string& update_time,
                                             int update_millisec,
-                                            const struct timeval* t_pcap) {
+                                            const soil::DateTime& time_stamp) {
   SOIL_TRACE("Server::toSpeedMData()");
 
   SOIL_DEBUG_PRINT(instru);
@@ -71,7 +71,7 @@ std::shared_ptr<MData> Server::toSpeedMData(const std::string& instru,
   speed_data->instru = instru;
   speed_data->update_time = update_time;
   speed_data->update_millisec = update_millisec;
-  speed_data->t_pcap = t_pcap;
+  speed_data->time_stamp = time_stamp;
 
   return speed_data;
 }

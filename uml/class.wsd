@@ -1,0 +1,9 @@
+@startuml MData
+interface soil::Data
+interface MData
+
+soil::Data <|-- MData
+MData <|-- SpeedMData
+
+
+@endum

@@ -44,10 +44,12 @@ void ZebraService::onReceiveMarketData(const ftdc::MarketDataField* md,
   SOIL_TRACE("ZebraService::onReceiveMarketData()");
 
   if (callback_) {
+    soil::DateTime tk(std::chrono::system_clock::from_time_t(ts.tv_sec));
+    tk += std::chrono::microseconds(ts.tv_usec);
     callback_->onMData(md->updatetime_field.InstrumentID,
                        md->updatetime_field.UpdateTime,
                        md->updatetime_field.UpdateMillisec,
-                       &ts);
+                       tk);
   }
 }
 

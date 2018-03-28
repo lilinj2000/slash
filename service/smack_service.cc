@@ -26,6 +26,7 @@
 
 #include "service/smack_service.h"
 #include "soil/log.h"
+#include "soil/date_time.h"
 
 namespace slash {
 
@@ -45,7 +46,8 @@ void SmackService::onReceiveNormal(const smack::guava_udp_normal* data) {
 
   if (callback_) {
     callback_->onMData(data->m_symbol, data->m_update_time,
-                       data->m_millisecond);
+                       data->m_millisecond,
+                       soil::DateTime::now());
   }
 }
 

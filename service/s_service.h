@@ -29,6 +29,7 @@
 
 #include <string>
 #include "soil/json.h"
+#include "soil/date_time.h"
 
 namespace slash {
 
@@ -36,7 +37,7 @@ class SCallback {
  public:
   virtual void onMData(const std::string& instru,
                        const std::string& update_time, int update_millisec,
-                       const struct timeval* t_pcap = nullptr) = 0;
+                       const soil::DateTime& time_stamp) = 0;
 
   virtual ~SCallback() {}
 };

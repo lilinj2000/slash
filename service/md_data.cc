@@ -45,15 +45,6 @@ void SpeedMData::writeToFile(std::ofstream* os) const {
         << update_millisec << "\t" << instru << "\t" << start_time << "\t"
         << time_stamp << "\t" << delay.count();
 
-  if (t_pcap) {
-    soil::DateTime tk(std::chrono::system_clock::from_time_t(t_pcap->tv_sec));
-    tk += std::chrono::microseconds(t_pcap->tv_usec);
-
-    std::chrono::system_clock::duration delay = tk - start_time;
-
-    (*os) << "\t" << tk << "\t" << delay.count();
-  }
-
   (*os) << std::endl;
 }
 

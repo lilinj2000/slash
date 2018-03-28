@@ -43,13 +43,13 @@ class Server : public SCallback {
 
   virtual void onMData(const std::string& instru,
                        const std::string& update_time, int update_millisec,
-                       const struct timeval* t_pcap = nullptr);
+                       const soil::DateTime& time_stamp);
 
  protected:
   std::shared_ptr<MData> toSpeedMData(const std::string& instru,
                                       const std::string& update_time,
                                       int update_millisec,
-                                      const struct timeval* t_pcap);
+                                      const soil::DateTime& time_stamp);
 
  private:
   std::unique_ptr<Options> options_;
